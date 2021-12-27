@@ -13,7 +13,7 @@ import (
 	"io"
 	"os"
 
-	"fake.com/string_tokenizer/pkg/tokenizer"
+	"github.com/noodleslove/string_tokenizer/pkg/str_tokenizer"
 )
 
 const MAX_BUFFER int = 1000
@@ -25,7 +25,7 @@ type FileTokenizer struct {
 	more     bool     // false if last token of the last block
 	//  has been processed and now we are at
 	//  the end of the last block.
-	strToken *tokenizer.Tokenizer // The StrTokenizer object to tokenize current block
+	strToken *str_tokenizer.StrTokenizer // The StrTokenizer object to tokenize current block
 }
 
 func check(e error) {
@@ -48,7 +48,7 @@ func NewFileTokenizer(name string) *FileTokenizer {
 		pos:      0,
 		blockPos: 0,
 		more:     false,
-		strToken: tokenizer.NewTokenizer(),
+		strToken: str_tokenizer.NewStrTokenizer(),
 	}
 	p.GetNewBlock()
 	return &p
@@ -91,8 +91,8 @@ func (f *FileTokenizer) BlockPos() int {
  *
  * @return Token
  */
-func (f *FileTokenizer) NextToken() *tokenizer.Token {
-	var t *tokenizer.Token = nil
+func (f *FileTokenizer) NextToken() *str_tokenizer.Token {
+	var t *str_tokenizer.Token = nil
 	if f.strToken.More() {
 		t = f.strToken.Tokenize()
 	} else if f.GetNewBlock() {
@@ -112,7 +112,7 @@ func (f *FileTokenizer) NextToken() *tokenizer.Token {
  * @param f
  * @return *Token
  */
-func (f *FileTokenizer) Tokenize() *tokenizer.Token {
+func (f *FileTokenizer) Tokenize() *str_tokenizer.Token {
 	if !f.More() {
 		panic("Reach end of file")
 	}

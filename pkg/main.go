@@ -4,13 +4,13 @@ import (
 	"fmt"
 	"os"
 
-	. "fake.com/file_tokenizer/pkg/f_tokenizer"
-	"fake.com/string_tokenizer/pkg/tokenizer"
+	. "github.com/noodleslove/file_tokenizer/pkg/f_tokenizer"
+	"github.com/noodleslove/string_tokenizer/pkg/str_tokenizer"
 )
 
 func main() {
 	ftk := NewFileTokenizer("solitude.txt")
-	var t *tokenizer.Token = nil
+	var t *str_tokenizer.Token = nil
 
 	f, err := os.Create("output.txt")
 	if err != nil {
