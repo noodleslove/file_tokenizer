@@ -9,13 +9,13 @@ import (
 )
 
 func main() {
-	ftk := NewFileTokenizer("solitude.txt")
-	var t *str_tokenizer.Token = nil
-
 	f, err := os.Create("output.txt")
 	if err != nil {
 		panic(err)
 	}
+
+	ftk := NewFileTokenizer("solitude.txt", f)
+	var t *str_tokenizer.Token = nil
 
 	defer f.Close()
 	f.WriteString(fmt.Sprintf(
@@ -40,6 +40,6 @@ func main() {
 		t = ftk.Tokenize()
 	}
 
+	f.WriteString(fmt.Sprintf("Word count: %d\n", tokenCount))
 	f.Sync()
-	fmt.Printf("Word count: %d\n", tokenCount)
 }

@@ -16,10 +16,11 @@ import (
 	"github.com/noodleslove/string_tokenizer/pkg/str_tokenizer"
 )
 
-const MAX_BUFFER int = 1000
+const MAX_BUFFER int = 199
 
 type FileTokenizer struct {
-	file     *os.File // file being tokenized
+	inFile   *os.File // file being tokenized
+	outFile  *os.File // file being outputed
 	pos      int      // Current position in the file
 	blockPos int      // Current position in the current block
 	more     bool     // false if last token of the last block
@@ -39,12 +40,13 @@ func check(e error) {
  *
  * @param fname
  */
-func NewFileTokenizer(name string) *FileTokenizer {
-	f, err := os.OpenFile(name, os.O_RDONLY, 0644)
+func NewFileTokenizer(inName string, out *os.File) *FileTokenizer {
+	in, err := os.OpenFile(inName, os.O_RDONLY, 0644)
 	check(err)
 
 	p := FileTokenizer{
-		file:     f,
+		inFile:   in,
+		outFile:  out,
 		pos:      0,
 		blockPos: 0,
 		more:     false,
@@ -131,19 +133,21 @@ func (f *FileTokenizer) Tokenize() *str_tokenizer.Token {
  */
 func (f *FileTokenizer) GetNewBlock() bool {
 	buffer := make([]byte, MAX_BUFFER)
-	_, err := f.file.Read(buffer)
+	n, err := f.inFile.Read(buffer)
 	if err != nil {
 		if err == io.EOF {
-			err = f.file.Close()
+			err = f.inFile.Close()
 			check(err)
-			fmt.Println("*** END OF FILE ***")
+			f.outFile.WriteString("*** END OF FILE ***\n")
 			return false
 		} else {
 			panic(err)
 		}
 	}
 
-	// fmt.Printf("----- New Block ---------------------[%d] bytes\n", n)
+	f.outFile.WriteString(
+		fmt.Sprintf("----- New Block ---------------------[%d] bytes\n", n),
+	)
 	f.pos += f.blockPos
 	f.strToken.SetString(string(buffer))
 	f.more = true
